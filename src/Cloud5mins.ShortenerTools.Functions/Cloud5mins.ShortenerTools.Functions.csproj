@@ -3,6 +3,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <AzureFunctionsVersion>v4</AzureFunctionsVersion>
     <OutputType>Exe</OutputType>
+	<DefineConstants Condition="'$(SECURED)'=='true'">$(DefineConstants);SECURED</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="cronos" Version="0.7.1" />

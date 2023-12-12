@@ -48,7 +48,13 @@ namespace Cloud5mins.ShortenerTools.Functions
 
         [Function("UrlCreate")]
         public async Task<HttpResponseData> Run(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "api/UrlCreate")] HttpRequestData req,
+        [HttpTrigger(
+#if SECURED
+            AuthorizationLevel.Function,
+#else
+            AuthorizationLevel.Anonymous,
+#endif
+            "get", "post", Route = "api/UrlCreate")] HttpRequestData req,
             ExecutionContext context
         )
         {

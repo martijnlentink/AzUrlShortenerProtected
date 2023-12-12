@@ -9,6 +9,14 @@
                 "description": "Name used as base-template to name the resources to be deployed in Azure."
             }
         },
+        "nameSuffix": {
+            "defaultValue": "",
+            "type": "string",
+            "maxLength": 5,
+            "metadata": {
+                "description": "Suffix to be added after the base name. This value could be used as environment separation ({baseName}-{nameSuffix}). If empty a 5 character random string is generated."
+            }
+        },
         "existingSWAName": {
             "type": "string",
             "defaultValue": "SKIP-THIS-RESOURCE",
@@ -50,16 +58,51 @@
             "metadata": {
                 "description": "Owner of this deployment, person to contact for question."
             }
+        },
+        "IsSecured": {
+            "defaultValue": false,
+            "type": "bool",
+            "metadata": {
+                "description": "If true set AuthorizationLevel to Function otherwise Anonymous"
+            }
+        },
+        "FunctionAppNamingAbbreviation": {
+            "defaultValue": "func",
+            "type": "string",
+            "metadata": {
+                "description": "Abbrevation used as suffix for the Azure Function App (see https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations)"
+            }
+        },
+        "AppServicePlanAbbreviation": {
+            "defaultValue": "asp",
+            "type": "string",
+            "metadata": {
+                "description": "Abbrevation used as suffix for the App Service Plan (see https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations)"
+            }
+        },
+        "StorageAccountAbbreviation": {
+            "defaultValue": "st",
+            "type": "string",
+            "metadata": {
+                "description": "Abbrevation used as suffix for the Storage Account (see https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations)"
+            }
+        },
+        "ApplicationInsightsAbbreviation": {
+            "defaultValue": "appi",
+            "type": "string",
+            "metadata": {
+                "description": "Abbrevation used as suffix for the Application Insights (see https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations)"
+            }
         }
     },
     "variables": {
-        "suffix": "[substring(toLower(uniqueString(resourceGroup().id, resourceGroup().location)),0,5)]",
-        "funcAppName": "[toLower(concat(parameters('baseName'), '-', variables('suffix'), '-fa'))]",
+        "suffix": "[coalesce(parameters('nameSuffix'), substring(toLower(uniqueString(resourceGroup().id, resourceGroup().location)),0,5))]",
+        "funcAppName": "[toLower(concat(substring(parameters('baseName'),0, min(length(parameters('baseName')),sub(sub(30, length(variables('suffix'))),length(parameters('FunctionAppNamingAbbreviation'))))), '-', variables('suffix'), '-', parameters('FunctionAppNamingAbbreviation')))]",
         "swaName": "[parameters('existingSWAName')]",
         "deployTinyBlazorAdmin": "[if(equals(parameters('existingSWAName'), 'SKIP-THIS-RESOURCE'), 'false', 'true')]",
-        "storageAccountName": "[tolower(concat(substring(parameters('baseName'), 0, min(length(parameters('baseName')),16)), variables('suffix'), 'sa'))]",
-        "funcHhostingPlanName": "[concat(substring(parameters('baseName'), 0, min(length(parameters('baseName')),13)), '-', variables('suffix'), '-asp')]",
-        "insightsAppName": "[concat(substring(parameters('baseName'), 0, min(length(parameters('baseName')),13)), '-', variables('suffix'), '-ai')]",
+        "storageAccountName": "[tolower(concat(substring(parameters('baseName'), 0, min(length(parameters('baseName')),sub(sub(24, length(variables('suffix'))),length(parameters('StorageAccountAbbreviation'))))), variables('suffix'), parameters('StorageAccountAbbreviation')))]",
+        "funcHhostingPlanName": "[concat(substring(parameters('baseName'), 0, min(length(parameters('baseName')),sub(sub(58,length(variables('suffix'))),length(parameters('AppServicePlanAbbreviation'))))), '-', variables('suffix'), '-', parameters('AppServicePlanAbbreviation'))]",
+        "insightsAppName": "[concat(substring(parameters('baseName'), 0, min(length(parameters('baseName')),sub(sub(253,length(variables('suffix'))),length(parameters('ApplicationInsightsAbbreviation'))))), '-', variables('suffix'), '-', parameters('ApplicationInsightsAbbreviation'))]",
         "functionProjectFolder": "src"
     },
     "resources": [
@@ -117,6 +160,10 @@
                         {
                             "name": "defaultRedirectUrl",
                             "value": "[parameters('defaultRedirectUrl')]"
+                        },
+                        {
+                            "name": "IS_SECURED",
+                            "value": "[parameters('IsSecured')]"
                         }
                     ]
                 },
