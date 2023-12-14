@@ -3,16 +3,34 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "baseName": {
-            "value": "AzUrlShortTools"
+            "value": "urlshortener"
         },
         "OwnerName": {
-            "value": "Me"
+            "value": "Martijn Lentink"
         },
         "GitHubBranch": {
-            "value": "main"
+            "value": "VB"
         },
         "defaultRedirectUrl": {
-            "value": "https://azure.com"
+            "value": "https://"
+        },
+        "IsSecured": {
+            "value": true
+        },
+        "GitHubURL": {
+            "value": "https://github.com/martijnlentink/AzUrlShortenerProtected.git"
+        },
+        "ApplicationInsightsAbbreviation": {
+            "value": "ai"
+        },
+        "StorageAccountAbbreviation": {
+            "value": "strg"
+        },
+        "AppServicePlanAbbreviation": {
+            "value": "asp"
+        },
+        "FunctionAppNamingAbbreviation": {
+            "value": "fn"
         }
     }
 }
